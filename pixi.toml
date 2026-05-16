@@ -1,0 +1,11 @@
+[workspace]
+authors = ["Ben Wibking <ben@wibking.com>"]
+channels = ["https://conda.modular.com/max", "conda-forge"]
+name = "zed_mojo"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+mojo = ">=1.0.0b1,<2"

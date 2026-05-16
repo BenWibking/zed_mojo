@@ -1,0 +1,6 @@
+/target
+/.zed
+*.wasm
+# pixi environments
+.pixi/*
+!.pixi/config.toml
