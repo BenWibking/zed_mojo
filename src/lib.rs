@@ -2,7 +2,6 @@ use zed_extension_api as zed;
 
 const MOJO_LSP_SERVER_ID: &str = "mojo-lsp-server";
 const MOJO_LSP_EXECUTABLE: &str = "mojo-lsp-server";
-const MOJO_LSP_PROXY: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/bin/mojo-lsp-zed.js");
 
 struct MojoExtension;
 
@@ -27,10 +26,15 @@ impl zed::Extension for MojoExtension {
         })?;
 
         let node = zed::node_binary_path()?;
+        let proxy = std::env::current_dir()
+            .map_err(|error| format!("unable to locate the installed extension: {error}"))?
+            .join("bin/mojo-lsp-zed.js")
+            .to_string_lossy()
+            .into_owned();
 
         Ok(zed::Command {
             command: node,
-            args: vec![MOJO_LSP_PROXY.into(), command, "--log=error".into()],
+            args: vec![proxy, command, "--log=error".into()],
             env: vec![("MODULAR_TELEMETRY_ENABLED".into(), "0".into())],
         })
     }
