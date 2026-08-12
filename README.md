@@ -5,10 +5,10 @@ This extension adds Mojo language support to Zed:
 - Tree-sitter syntax highlighting for `.mojo` files
 - Mojo LSP integration through `mojo-lsp-server`
 
-The extension starts `mojo-lsp-server` through a small Node proxy. Mojo 1.0.0b1
-advertises notebook and semantic-token-delta capabilities that are not accepted
-by Zed 1.2.6; the proxy removes those capabilities and forwards the rest of the
-protocol unchanged.
+The extension starts `mojo-lsp-server` through a small Node proxy. Mojo 1.0.0
+advertises notebook synchronization, which Zed does not support; the proxy
+removes that capability and forwards the rest of the protocol unchanged,
+including semantic-token delta support.
 
 ## Requirements
 
