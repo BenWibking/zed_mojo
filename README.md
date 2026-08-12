@@ -12,9 +12,30 @@ including semantic-token delta support.
 
 ## Requirements
 
-Install Mojo so that `mojo-lsp-server` is available on `PATH` when Zed starts.
+Install Mojo so that `mojo-lsp-server` is available in one of these locations,
+in lookup order:
 
-For Pixi projects, open Zed from the Pixi environment:
+1. The path configured in Zed's `lsp.mojo-lsp-server.binary.path` setting
+2. The worktree shell's `PATH`
+3. The worktree's default Pixi environment under `.pixi/envs/default`
+
+For example, a custom installation can be configured in Zed's `settings.json`:
+
+```json
+{
+  "lsp": {
+    "mojo-lsp-server": {
+      "binary": {
+        "path": "/path/to/mojo-lsp-server"
+      }
+    }
+  }
+}
+```
+
+Projects with a local default Pixi environment can be opened normally. To use a
+named Pixi environment, launch Zed from that environment or configure its
+`mojo-lsp-server` path explicitly:
 
 ```sh
 pixi shell
