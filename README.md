@@ -25,6 +25,11 @@ ARM64. Native Windows is not supported by Mojo; use Zed in WSL instead. The
 extension verifies the published SHA-256 hashes before extracting or launching
 the downloaded packages. Downloads are subject to the Modular software license.
 
+For Conda/Pixi installations, the extension derives `MODULAR_HOME` from the
+selected server path so the LSP can find `share/max/modular.cfg` and the Mojo
+standard library. An explicit `binary.env.MODULAR_HOME` setting overrides the
+derived value.
+
 For example, a custom installation can be configured in Zed's `settings.json`:
 
 ```json
@@ -32,7 +37,10 @@ For example, a custom installation can be configured in Zed's `settings.json`:
   "lsp": {
     "mojo-lsp-server": {
       "binary": {
-        "path": "/path/to/mojo-lsp-server"
+        "path": "/path/to/mojo-lsp-server",
+        "env": {
+          "MODULAR_HOME": "/path/to/prefix/share/max"
+        }
       }
     }
   }
