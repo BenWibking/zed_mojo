@@ -1,3 +1,5 @@
+mod managed_lsp;
+
 use zed_extension_api as zed;
 
 const MOJO_LSP_SERVER_ID: &str = "mojo-lsp-server";
@@ -7,11 +9,15 @@ const PIXI_MOJO_LSP_EXECUTABLES: [&str; 2] = [
     ".pixi/envs/default/Scripts/mojo-lsp-server.exe",
 ];
 
-struct MojoExtension;
+struct MojoExtension {
+    managed_binary_path: Option<String>,
+}
 
 impl zed::Extension for MojoExtension {
     fn new() -> Self {
-        Self
+        Self {
+            managed_binary_path: None,
+        }
     }
 
     fn language_server_command(
@@ -28,7 +34,7 @@ impl zed::Extension for MojoExtension {
                 .ok()
                 .and_then(|settings| settings.binary);
 
-        let command = binary_settings
+        let discovered_command = binary_settings
             .as_ref()
             .and_then(|settings| settings.path.clone())
             .or_else(|| worktree.which(MOJO_LSP_EXECUTABLE))
@@ -36,12 +42,37 @@ impl zed::Extension for MojoExtension {
                 PIXI_MOJO_LSP_EXECUTABLES
                     .iter()
                     .find_map(|path| worktree.which(path))
-            })
-            .ok_or_else(|| {
-                format!(
-                    "unable to find `{MOJO_LSP_EXECUTABLE}`. Configure `lsp.{MOJO_LSP_SERVER_ID}.binary.path` in Zed settings, add it to PATH, or install Mojo in the worktree's default Pixi environment."
-                )
-            })?;
+            });
+
+        let command = if let Some(command) = discovered_command {
+            command
+        } else if let Some(command) = self.managed_binary_path.clone() {
+            command
+        } else {
+            zed::set_language_server_installation_status(
+                language_server_id,
+                &zed::LanguageServerInstallationStatus::Downloading,
+            );
+            match managed_lsp::managed_lsp_path() {
+                Ok(command) => {
+                    self.managed_binary_path = Some(command.clone());
+                    zed::set_language_server_installation_status(
+                        language_server_id,
+                        &zed::LanguageServerInstallationStatus::None,
+                    );
+                    command
+                }
+                Err(error) => {
+                    zed::set_language_server_installation_status(
+                        language_server_id,
+                        &zed::LanguageServerInstallationStatus::Failed(error.clone()),
+                    );
+                    return Err(format!(
+                        "unable to find or install `{MOJO_LSP_EXECUTABLE}`: {error}"
+                    ));
+                }
+            }
+        };
 
         let server_args = binary_settings
             .as_ref()

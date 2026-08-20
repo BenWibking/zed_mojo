@@ -12,12 +12,18 @@ including semantic-token delta support.
 
 ## Requirements
 
-Install Mojo so that `mojo-lsp-server` is available in one of these locations,
-in lookup order:
+The extension finds or installs `mojo-lsp-server` in this lookup order:
 
 1. The path configured in Zed's `lsp.mojo-lsp-server.binary.path` setting
 2. The worktree shell's `PATH`
 3. The worktree's default Pixi environment under `.pixi/envs/default`
+4. A managed Mojo 1.0.0 installation downloaded from Modular's stable Conda
+   channel into Zed's extension storage
+
+The managed installation supports Apple Silicon, Linux x86-64, and Linux
+ARM64. Native Windows is not supported by Mojo; use Zed in WSL instead. The
+extension verifies the published SHA-256 hashes before extracting or launching
+the downloaded packages. Downloads are subject to the Modular software license.
 
 For example, a custom installation can be configured in Zed's `settings.json`:
 
