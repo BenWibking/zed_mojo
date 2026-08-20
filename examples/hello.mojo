@@ -5,5 +5,5 @@ def main():
     var z = add(x, y)
     print(z)
 
-def add(a: Float, b: Float) -> Float:
+def add(a: Float64, b: Float64) -> Float64:
     return a + b
